@@ -1,5 +1,4 @@
 import pygame
-import random
 
 class Ores:
     cooldown = 100

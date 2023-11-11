@@ -1,13 +1,15 @@
 import pygame
 import sys
-
-from scripts.tilemap import Tilemap
-from scripts.utils import load_image, load_images, transform_images, Animation
-from scripts.entities import PhysicsEntitiy, Player
-from scripts.ore import Ores
-from scripts.ore_extractor import Mine
-from scripts.gui import MainGui, InventoryGui
-from scripts.font import Text
+from scripts.Animation import Animation
+from scripts.InventoryGui import InventoryGui
+from scripts.Player import Player
+from scripts.Tilemap import Tilemap
+from scripts.utils import load_image, load_images, transform_images
+from scripts.PhysicsEntitiy import PhysicsEntitiy
+from scripts.Ores import Ores
+from scripts.Mine import Mine
+from scripts.MainGui import MainGui
+from scripts.Text import Text
 
 RENDER_SCALE = 4.0
 
