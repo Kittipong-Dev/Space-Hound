@@ -123,7 +123,7 @@ class Game:
                 ore.respawn(ore, self.ores, self.display, render_scroll)
 
             # Player
-            spd_factor = 2 
+            spd_factor = 5
             # Movement keys are [A D W S]
             self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * spd_factor, (self.movement[3] - self.movement[2]) * spd_factor))
             self.player.render(self.display, render_scroll)
