@@ -11,11 +11,18 @@ from scripts.font import Text
 
 RENDER_SCALE = 4.0
 
+# The Game class represents a game in which the player controls a character and interacts with the
+# environment.
 class Game:
     def __init__(self):
+        """
+        This function initializes the game by setting up the display window, loading images, creating
+        the tilemap, spawning ores, creating the player, and setting up the GUI.
+        """
         pygame.init()
 
         # Display
+        # The code snippet is setting up the display window for the game using the Pygame library.
         pygame.display.set_caption('Space Hound')
         self.screen = pygame.display.set_mode((1024, 579), pygame.RESIZABLE)
         self.display = pygame.Surface((256, 144), pygame.SRCALPHA)
@@ -79,6 +86,10 @@ class Game:
         self.inventory = InventoryGui(self)
 
     def run(self):
+        """
+        The above function is a game loop that updates and renders various game elements such as the
+        tilemap, player, ores, minimap, and GUI.
+        """
         while True:
 
             # Display
@@ -110,7 +121,9 @@ class Game:
                 ore.respawn(ore, self.ores, self.display, render_scroll)
 
             # Player
-            self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * 2, (self.movement[3] - self.movement[2]) * 2))
+            spd_factor = 2 
+            # Movement keys are [A D W S]
+            self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * spd_factor, (self.movement[3] - self.movement[2]) * spd_factor))
             self.player.render(self.display, render_scroll)
 
             # Minimap:
