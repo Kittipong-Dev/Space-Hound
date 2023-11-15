@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-from scripts.tilemap import Tilemap
+from scripts.Tilemap import Tilemap
 from scripts.utils import load_image, load_images, transform_images
 
 RENDER_SCALE = 4.0
