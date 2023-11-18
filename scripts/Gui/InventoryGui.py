@@ -1,5 +1,5 @@
-from scripts.Gui import Gui
-
+from scripts.Gui.Gui import Gui
+from scripts.Database.Inventory import Inventory
 
 import pygame
 

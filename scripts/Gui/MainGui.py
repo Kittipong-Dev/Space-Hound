@@ -1,27 +1,25 @@
 from scripts.Text import Text
-from scripts.Gui import Gui
+from scripts.Gui.Gui import Gui
 
 
 import pygame
 
 
 class MainGui:
-    def __init__(self, game, hp=100, air = 100, lv=0):
+    def __init__(self, game, hp=100, air = 100):
         self.game = game
         self.hp = hp
         self.air = air
-        self.lv = lv
 
-    def update(self, surf, mpos, on_main_gui):
+    def update(self, surf, mpos, on_main_gui, lv):
         # Built
         self.toolbar = Gui(self.game, 'main', 1, (50, surf.get_height() - 25))
-        self.pause = Gui(self.game, 'main', 2, (85, 7.5))
+        self.pause = Gui(self.game, 'main', 2, (surf.get_width() - 8, 0))
         self.frame_profile = Gui(self.game, 'main', 0, (5, 5))
         self.profile = Gui(self.game, 'main', 4, (5, 5))
         self.frame_minimap = Gui(self.game, 'main', 0, (surf.get_width() - 37, 5))
         self.player_bar = Gui(self.game, 'main', 3, (25, 7.5))
-        level = 0
-        self.level = Text(f"Level: {self.lv}", 7, (40, 9), (0, 0, 0))
+        self.level = Text(f"LVL: {lv}", 7, (40, 9), (0, 0, 0))
         self.hp_bar = pygame.Rect(40, 17, (self.game.assets['gui/main'][3].get_width() - 32) * (self.hp / 100), self.game.assets['gui/main'][3].get_height() - 21)
         self.air_bar = pygame.Rect(40, 25, (self.game.assets['gui/main'][3].get_width() - 32) * (self.air / 100), self.game.assets['gui/main'][3].get_height() - 21)
 
@@ -37,7 +35,7 @@ class MainGui:
                     self.game.clicking = False
 
             if self.pause.rect().collidepoint(mpos) and self.game.clicking:
-                print('Setting')
+                self.game.playing = False
                 self.game.clicking = False
 
             if self.player_bar.rect().collidepoint(mpos) and self.game.clicking:
