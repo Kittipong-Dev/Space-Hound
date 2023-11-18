@@ -22,12 +22,10 @@ class InputBox:
             if not self.entry.rect().collidepoint(mpos):
                 self.typing = False
             if self.enter.rect().collidepoint(mpos):
-                print('clicked')
                 self.done = True
             self.game.clicking = False
 
         if self.done:
-            print('done')
             self.game.inputing = False
 
         self.entry_text = Text(self.input, 7, ((self.game.display.get_width()//2 - 30, self.game.display.get_height()//2 + 2)))
@@ -40,7 +38,6 @@ class InputBox:
 
     def event(self, event):
         if event.type == pygame.KEYDOWN:
-            print(event.unicode)
             if self.typing:
                 if '\x08' != event.unicode and '\r' != event.unicode:
                     self.input = self.input + event.unicode

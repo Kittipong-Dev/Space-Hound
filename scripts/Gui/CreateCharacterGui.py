@@ -58,6 +58,8 @@ class CreateCharacterGui:
         try:
             level_txt = Text(str(Character().load(Character().query()[self.index])[Character().INDEXPAIR['level']]), 16, self.pos)
             level_txt.render(surf)
+            name = Text('name: ' + str(Character().load(Character().query()[self.index])[Character().INDEXPAIR['name']]), 7, (self.pos[0] + 55, self.pos[1] + 8))
+            name.render(surf)
         except IndexError:
             pass
         
