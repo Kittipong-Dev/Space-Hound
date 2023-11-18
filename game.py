@@ -283,8 +283,8 @@ class Game:
                                 print('9')
                             if event.key == pygame.K_0:
                                 print('0')
-                            if event.key == pygame.K_ESCAPE:
-                                self.playing = False
+                        if event.key == pygame.K_ESCAPE:
+                            self.playing = False
                     
                         # test database ########
                         if self.on_inventory:
