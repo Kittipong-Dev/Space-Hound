@@ -2,6 +2,7 @@ import pygame
 from scripts.Gui.Gui import Gui
 from scripts.Database.Character import Character
 from scripts.Text import Text
+from scripts.InputBox import InputBox
 
 class CreateCharacterGui:
     def __init__(self, game, pos, index=0):
@@ -12,6 +13,7 @@ class CreateCharacterGui:
         self.button = Gui(self.game, 'create character', self.btype, self.pos)
         self.stat_bar = Gui(self.game, 'create character', 2, self.pos)
         self.delete_btn = Gui(self.game, 'create character', 3, (self.stat_bar.rect().bottomright[0] - 18, self.stat_bar.rect().bottomright[1] - 17))
+        self.create_char = False
 
     def update(self, clicking, mpos):
         try:
@@ -28,9 +30,8 @@ class CreateCharacterGui:
                     print(str(Character().load(Character().query()[self.index])))
                     self.game.clicking = False
             except IndexError:
-                self.game.inputing = True
-                name = input('Enter Your Name: ')
-                Character().create(name)
+                self.create_char = True
+                self.game.input_box = InputBox(self.game, 'Enter Your Name')
                 self.game.clicking = False
             try:
                 if self.delete_btn.rect().collidepoint(mpos):
@@ -39,12 +40,18 @@ class CreateCharacterGui:
             except IndexError:
                 pass
 
+        if self.create_char:
+            name = self.game.input_box.get_input()
+            if name:
+                Character().create(name)
+                self.create_char = False
+
     def render(self, surf):
         self.stat_bar.render(surf)
 
         self.button = Gui(self.game, 'create character', self.btype, self.pos)
         self.button.render(surf)
-        
+
         if self.btype:
             self.delete_btn.render(surf)
 

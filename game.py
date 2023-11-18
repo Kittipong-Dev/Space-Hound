@@ -114,12 +114,8 @@ class Game:
         self.spin_player_gui = SpinPlayerGui(self)
         # Input box
         self.inputing = False
-        self.input_box = InputBox(self, 'Enter Your Name')
-        
-        # typing function
-        self.typing = False
-        self.enter = False
-        self.text = ''
+        self.input_box = ''
+
 
         # Test database #####
         self.replace = False
@@ -214,10 +210,10 @@ class Game:
                     create_btn.update(self.clicking, mpos)
                     create_btn.render(self.display)
 
-            if self.inputing:
-                # Input Box
-                self.input_box.update(self.clicking, mpos)
-                self.input_box.render(self.display)
+                if self.inputing:
+                    # Input Box
+                    self.input_box.update(self.clicking, mpos)
+                    self.input_box.render(self.display)
             
             # test database ##############
             # self.show_query = Text(f"{Character().query()}", 16, pos=(0, 50))
@@ -239,6 +235,9 @@ class Game:
 
             # Event
             for event in pygame.event.get():
+                if self.inputing:
+                    self.input_box.event(event)
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -251,27 +250,7 @@ class Game:
                     if event.button == 1:
                         self.clicking = False
 
-                if self.enter:
-                    print(self.text)
-                    self.text = ''
-                    self.enter = False
-                    self.typing = False
-                    self.inputing = False
-
                 if event.type == pygame.KEYDOWN:
-                    if self.typing:
-                        self.text = self.text + event.unicode
-                        if event.key == pygame.K_BACKSPACE:
-                            x = list(self.text)
-                            try:
-                                x.pop()
-                                x.pop()
-                            except IndexError:
-                                pass
-                            x = "".join(x)
-                            self.text = x
-                        if event.key == pygame.K_RETURN:
-                            self.enter = True
 
                     if self.playing:
                         if event.key == pygame.K_s:
@@ -336,13 +315,6 @@ class Game:
 
                         if event.key == pygame.K_e:
                             self.on_inventory = not self.on_inventory
-
-                    # test database ##############
-                    # if event.key == pygame.K_n:
-                    #     Character().create()
-                    
-                    if event.key == pygame.K_DELETE:
-                        Character().delete(delete_id)
 
                     if event.key == pygame.K_b:
                         Character().save(self.char_id, new_level, new_exp)

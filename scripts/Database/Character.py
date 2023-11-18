@@ -1,6 +1,5 @@
 import sqlite3
 from scripts.Database.Database import Database
-
 class Character:
 
     INDEXPAIR = {
