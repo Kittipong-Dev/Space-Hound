@@ -45,7 +45,6 @@ class InputBox:
                     try:
                         x = list(self.input)
                         x.pop()
-                        x.pop()
                         self.input = ''.join(x)
                     except IndexError:
                         pass
