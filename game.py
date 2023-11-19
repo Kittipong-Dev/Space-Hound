@@ -5,7 +5,7 @@ from scripts.Gui.InventoryGui import InventoryGui
 from scripts.Player import Player
 from scripts.Tilemap import Tilemap
 from scripts.utils import load_image, load_images, transform_images
-from scripts.PhysicsEntitiy import PhysicsEntitiy
+from scripts.PhysicsEntity import PhysicsEntity
 from scripts.Ores import Ores
 from scripts.Mine import Mine
 from scripts.Gui.MainGui import MainGui
@@ -16,6 +16,7 @@ from scripts.Gui.CreateCharacterGui import CreateCharacterGui
 from scripts.Gui.LoadingGui import LoadingGui
 from scripts.Gui.SpinPlayerGui import SpinPlayerGui
 from scripts.InputBox import InputBox
+from scripts.Level import Level
 
 RENDER_SCALE = 4.0
 
@@ -120,6 +121,7 @@ class Game:
         # Test database #####
         self.replace = False
 
+        self.level = Level(self)
 
     def run(self):
         """
@@ -193,8 +195,10 @@ class Game:
                     self.inventory.y = 0
 
                 # test database
-                new_level = Character().load(self.char_id)[Character().INDEXPAIR['level']] + 1 ##
-                new_exp = 30.324
+                # new_level = Character().load(self.char_id)[Character().INDEXPAIR['level']] + 1 ##
+                # new_exp = 30.324
+            
+                self.level.update(Character().load(self.char_id)[Character().INDEXPAIR['level']], Character().load(self.char_id)[Character().INDEXPAIR['exp']])
 
             if not self.playing:
                 # Gui
@@ -313,8 +317,8 @@ class Game:
                         if event.key == pygame.K_e:
                             self.on_inventory = not self.on_inventory
 
-                    if event.key == pygame.K_b:
-                        Character().save(self.char_id, new_level, new_exp)
+                    # if event.key == pygame.K_b:
+                    #     Character().save(self.char_id, new_level, new_exp)
 
                 if event.type == pygame.KEYUP:
                     if self.playing:
