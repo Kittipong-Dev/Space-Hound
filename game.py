@@ -1,15 +1,22 @@
 import pygame
 import sys
 from scripts.Animation import Animation
-from scripts.InventoryGui import InventoryGui
+from scripts.Gui.InventoryGui import InventoryGui
 from scripts.Player import Player
 from scripts.Tilemap import Tilemap
 from scripts.utils import load_image, load_images, transform_images
-from scripts.PhysicsEntitiy import PhysicsEntitiy
+from scripts.PhysicsEntity import PhysicsEntity
 from scripts.Ores import Ores
 from scripts.Mine import Mine
-from scripts.MainGui import MainGui
+from scripts.Gui.MainGui import MainGui
 from scripts.Text import Text
+from scripts.Database.Character import Character
+from scripts.Database.Inventory import Inventory
+from scripts.Gui.CreateCharacterGui import CreateCharacterGui
+from scripts.Gui.LoadingGui import LoadingGui
+from scripts.Gui.SpinPlayerGui import SpinPlayerGui
+from scripts.InputBox import InputBox
+from scripts.Level import Level
 
 RENDER_SCALE = 4.0
 
@@ -43,9 +50,14 @@ class Game:
             'player/idley+1' : Animation(load_images('entities/player/idley+1', 'a'), img_dur=4),
             'player/idley-1' : Animation(load_images('entities/player/idley-1', 'a'), img_dur=4),
             'player/idlex' : Animation(load_images('entities/player/idlex', 'a'), img_dur=4),
-            'player/runx' : Animation(load_images('entities/player/runx', 'a'), img_dur=10),
+            'player/runx' : Animation(load_images('entities/player/runx', 'a'), img_dur=7),
             'player/runy-1' : Animation(load_images('entities/player/runy-1', 'a'), img_dur=11),
             'player/runy+1' : Animation(load_images('entities/player/runy+1', 'a'), img_dur=11),
+            'items/ore extractor/0' : load_image('items/ore extractor/0.png', 'a'),
+            'gui/create character' : load_images('gui/create character', 'a'),
+            'gui/loading' : load_images('gui/loading', 'a'),
+            'gui/spin player' : load_images('gui/spin player', 'a'),
+            'gui/input box' : load_images('gui/input box'),
         }
 
         # Tilemap
@@ -63,6 +75,9 @@ class Game:
         for ore in self.tilemap.extract([('ores', 0), ('ores', 1)], keep=False):
             self.ores.append(Ores(self, ore['pos'], ore['variant'], max_ore))
 
+        # Char id
+        self.char_id = int()
+
         # Player
         self.movement = [False, False, False, False]
         self.player = Player(self, (150, 120), (16, 17))
@@ -79,6 +94,9 @@ class Game:
         # Minimap
         self.miniscroll = [0, 0]
 
+        # Start game
+        self.playing = False
+
         # Gui
         # Main
         self.on_main_gui = True
@@ -86,24 +104,34 @@ class Game:
         # Inventory
         self.on_inventory = False
         self.inventory = InventoryGui(self)
+        # Create character
+        self.create_btns = list()
+        y = 2
+        for i in range(3):
+            self.create_btns.append(CreateCharacterGui(self, (self.display.get_width() - 100, y), i))
+            y += 48
+        # Loading
+        self.loading_gui = LoadingGui(self)
+        self.spin_player_gui = SpinPlayerGui(self)
+        # Input box
+        self.inputing = False
+        self.input_box = ''
+
+
+        # Test database #####
+        self.replace = False
+
+        self.level = Level(self)
 
     def run(self):
         """
         The above function is a game loop that updates and renders various game elements such as the
-        tilemap, player, ores, minimap, and GUI.
+        tilemap, player, ores, minimap, and GCUI.
         """
         while True:
 
             # Display
             self.display.fill((84, 154, 204))
-
-            # Camera movement
-            self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 5
-            self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 5
-            render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
-
-            # Tilemap
-            self.tilemap.render(self.display, render_scroll)
 
             # Mouse position
             mpos = pygame.mouse.get_pos()
@@ -112,55 +140,105 @@ class Game:
             #     print(mpos)
             #     self.clicking = False
 
-            # Ore
-            for ore in self.ores.copy():
-                if ore.rect(render_scroll).collidepoint(mpos) and self.clicking:
-                    damage = self.mine.update()
-                    ore.attack(damage)
-                    self.clicking = False
-                ore.update()
-                ore.render(self.display, render_scroll)
-                ore.respawn(ore, self.ores, self.display, render_scroll)
+            if self.playing:
+                # Camera movement
+                self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 5
+                self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 5
+                render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
 
-            # Player
-            spd_factor = 2
-            # Movement keys are [A D W S]
-            self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * spd_factor, (self.movement[3] - self.movement[2]) * spd_factor))
-            self.player.render(self.display, render_scroll)
+                # Tilemap
+                self.tilemap.render(self.display, render_scroll)
 
-            # Minimap:
-            self.miniscroll[0] += (self.player.rect().centerx - self.minimap.get_width() / 2 - self.miniscroll[0])
-            self.miniscroll[1] += (self.player.rect().centery - self.minimap.get_height() / 2 - self.miniscroll[1])
-            mini_scroll = (int(self.miniscroll[0]), int(self.miniscroll[1]))
+                # Ore
+                for ore in self.ores.copy():
+                    Mine(self).update(ore, mpos, self.clicking, render_scroll)
+                    ore.update()
+                    ore.render(self.display, render_scroll)
+                    ore.respawn(ore, self.ores, self.display, render_scroll)
 
-            self.minimap.fill((84, 154, 204))
-            self.tilemap.render(self.minimap, mini_scroll)
-            for ore in self.ores.copy():
-                ore.render(self.minimap, mini_scroll)
-            self.player.render(self.minimap, mini_scroll)
-            transition_surf = pygame.Surface((self.minimap.get_size()))
-            transition_surf.fill((119, 0, 255))
-            pygame.draw.circle(transition_surf, (255, 255, 255), (self.minimap.get_width() // 2, self.minimap.get_height() // 2), 104)
-            transition_surf.set_colorkey((255, 255, 255))
-            self.minimap.blit(transition_surf, (0, 0))
-            self.minimap.set_colorkey((119, 0, 255))
-            self.display.blit(pygame.transform.scale(self.minimap, (32, 32)), (self.display.get_width() - 37, 5))
+                # Player
+                spd_factor = 2
+                # Movement keys are [A D W S]
+                self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * spd_factor, (self.movement[3] - self.movement[2]) * spd_factor))
+                self.player.render(self.display, render_scroll)
 
-            # Gui
-            # Main
-            self.main_gui.update(self.display, mpos, self.on_main_gui)
-            self.main_gui.render(self.display)
-            # Inventory
-            if self.on_inventory:
-                self.inventory.update()
-                self.inventory.render(self.display)
-                self.on_main_gui = False
-            else:
-                self.on_main_gui = True
-                self.inventory.y = 0
+                # Minimap:
+                self.miniscroll[0] += (self.player.rect().centerx - self.minimap.get_width() / 2 - self.miniscroll[0])
+                self.miniscroll[1] += (self.player.rect().centery - self.minimap.get_height() / 2 - self.miniscroll[1])
+                mini_scroll = (int(self.miniscroll[0]), int(self.miniscroll[1]))
+
+                self.minimap.fill((84, 154, 204))
+                self.tilemap.render(self.minimap, mini_scroll)
+                for ore in self.ores.copy():
+                    ore.render(self.minimap, mini_scroll)
+                self.player.render(self.minimap, mini_scroll)
+                transition_surf = pygame.Surface((self.minimap.get_size()))
+                transition_surf.fill((119, 0, 255))
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.minimap.get_width() // 2, self.minimap.get_height() // 2), 104)
+                transition_surf.set_colorkey((255, 255, 255))
+                self.minimap.blit(transition_surf, (0, 0))
+                self.minimap.set_colorkey((119, 0, 255))
+                self.display.blit(pygame.transform.scale(self.minimap, (32, 32)), (self.display.get_width() - 37, 5))
+
+                # Gui
+                # Main
+                level = Character().load(self.char_id)[Character().INDEXPAIR['level']]
+                self.main_gui.update(self.display, mpos, self.on_main_gui, level)
+                self.main_gui.render(self.display)
+                # Inventory
+                if self.on_inventory:
+                    self.inventory.update()
+                    self.inventory.render(self.display)
+                    self.on_main_gui = False
+                else:
+                    self.on_main_gui = True
+                    self.inventory.y = 0
+
+                # test database
+                # new_level = Character().load(self.char_id)[Character().INDEXPAIR['level']] + 1 ##
+                # new_exp = 30.324
             
+                self.level.update()
+
+            if not self.playing:
+                # Gui
+                # loading
+                self.loading_gui.update()
+                self.loading_gui.render(self.display)
+                self.spin_player_gui.update()
+                self.spin_player_gui.render(self.display)
+                for create_btn in self.create_btns:
+                    create_btn.update(self.clicking, mpos)
+                    create_btn.render(self.display)
+
+                if self.inputing:
+                    # Input Box
+                    self.input_box.update(self.clicking, mpos)
+                    self.input_box.render(self.display)
+            
+            # test database ##############
+            # self.show_query = Text(f"{Character().query()}", 16, pos=(0, 50))
+            # i = 60
+            # self.datas = list()
+            # for char_id in Character().query():
+            #     i += 10
+            #     self.datas.append(Text(str(Character().load(char_id)), 16, pos=(0, i)))
+            # for data in self.datas:
+            #     data.render(self.display)
+
+            # self.show_query.render(self.display)
+
+        
+            try:
+                delete_id = Character().query()[0]
+            except IndexError:
+                pass
+
             # Event
             for event in pygame.event.get():
+                if self.inputing:
+                    self.input_box.event(event)
+
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -174,50 +252,84 @@ class Game:
                         self.clicking = False
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_s:
-                        self.movement[3] = True
-                    if event.key == pygame.K_w:
-                        self.movement[2] = True
-                    if event.key == pygame.K_d:
-                        self.movement[1] = True
-                    if event.key == pygame.K_a:
-                        self.movement[0] = True
 
-                    if self.on_main_gui:
-                        if event.key == pygame.K_1:
-                            print('1')
-                        if event.key == pygame.K_2:
-                            print('2')
-                        if event.key == pygame.K_3:
-                            print('3')
-                        if event.key == pygame.K_4:
-                            print('4')
-                        if event.key == pygame.K_5:
-                            print('5')
-                        if event.key == pygame.K_6:
-                            print('6')
-                        if event.key == pygame.K_7:
-                            print('7')
-                        if event.key == pygame.K_8:
-                            print('8')
-                        if event.key == pygame.K_9:
-                            print('9')
-                        if event.key == pygame.K_0:
-                            print('0')
+                    if self.playing:
+                        if event.key == pygame.K_s:
+                            self.movement[3] = True
+                        if event.key == pygame.K_w:
+                            self.movement[2] = True
+                        if event.key == pygame.K_d:
+                            self.movement[1] = True
+                        if event.key == pygame.K_a:
+                            self.movement[0] = True
+
+                        if self.on_main_gui:
+                            if event.key == pygame.K_1:
+                                print('1')
+                            if event.key == pygame.K_2:
+                                print('2')
+                            if event.key == pygame.K_3:
+                                print('3')
+                            if event.key == pygame.K_4:
+                                print('4')
+                            if event.key == pygame.K_5:
+                                print('5')
+                            if event.key == pygame.K_6:
+                                print('6')
+                            if event.key == pygame.K_7:
+                                print('7')
+                            if event.key == pygame.K_8:
+                                print('8')
+                            if event.key == pygame.K_9:
+                                print('9')
+                            if event.key == pygame.K_0:
+                                print('0')
                         if event.key == pygame.K_ESCAPE:
-                            print("Setting")
-                    if event.key == pygame.K_e:
-                        self.on_inventory = not self.on_inventory
+                            self.playing = False
+                    
+                        # test database ########
+                        if self.on_inventory:
+                            
+                            if event.key == pygame.K_1:
+                                Inventory().place('gold', 0, self.char_id)
+                            if event.key == pygame.K_2:
+                                Inventory().place('gold', 1, self.char_id)
+                            if event.key == pygame.K_3:
+                                Inventory().place('diamond', 2, self.char_id)
+        
+
+                            if event.key == pygame.K_r:
+                                self.replace = not self.replace
+
+                            if self.replace:
+                                if event.key == pygame.K_1:
+                                    Inventory().replace('diamond', 0, self.char_id)
+                                if event.key == pygame.K_2:
+                                    Inventory().replace('ruby', 1, self.char_id)
+                                if event.key == pygame.K_3:
+                                    Inventory().replace('gold', 2, self.char_id)
+
+                            if event.key == pygame.K_g:
+                                print(Inventory().load(self.char_id))
+
+
+
+                        if event.key == pygame.K_e:
+                            self.on_inventory = not self.on_inventory
+
+                    # if event.key == pygame.K_b:
+                    #     Character().save(self.char_id, new_level, new_exp)
 
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_s:
-                        self.movement[3] = False
-                    if event.key == pygame.K_w:
-                        self.movement[2] = False
-                    if event.key == pygame.K_d:
-                        self.movement[1] = False
-                    if event.key == pygame.K_a:
-                        self.movement[0] = False
+                    if self.playing:
+                        if event.key == pygame.K_s:
+                            self.movement[3] = False
+                        if event.key == pygame.K_w:
+                            self.movement[2] = False
+                        if event.key == pygame.K_d:
+                            self.movement[1] = False
+                        if event.key == pygame.K_a:
+                            self.movement[0] = False
 
             # Display
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))

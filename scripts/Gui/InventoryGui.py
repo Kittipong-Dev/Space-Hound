@@ -1,5 +1,5 @@
-from scripts.Gui import Gui
-
+from scripts.Gui.Gui import Gui
+from scripts.Database.Inventory import Inventory
 
 import pygame
 
@@ -10,7 +10,7 @@ class InventoryGui:
         self.y = 0
 
     def update(self):
-        self.y = min(self.y + 8, 140)
+        self.y = min(self.y + 8, 138)
 
     def render(self, surf):
         blur = pygame.Surface((256, 144))

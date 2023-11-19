@@ -6,11 +6,12 @@ class Mine:
         self.click = 0
         self.damage = 10
     
-    def update(self):
-        self.click += 1
-        if self.click > 0:
-            self.click = 0
-            return self.damage
+    def update(self, ore, mpos, clicking, render_scroll):
+        if ore.rect(render_scroll).collidepoint(mpos) and clicking:
+            ore.hp = max(0, ore.hp - self.damage)
+            print(ore.hp)
+            self.game.clicking = False
+            ore.clicking = True
 
     def render(self, surf, offset):
         pass

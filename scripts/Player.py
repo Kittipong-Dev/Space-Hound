@@ -1,6 +1,6 @@
-from scripts.PhysicsEntitiy import PhysicsEntitiy
+from scripts.PhysicsEntity import PhysicsEntity
 
-class Player(PhysicsEntitiy):
+class Player(PhysicsEntity):
     def __init__(self, game, pos, size):
         """
         The above function is a constructor for a player object in a game.
