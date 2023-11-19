@@ -126,7 +126,7 @@ class Game:
     def run(self):
         """
         The above function is a game loop that updates and renders various game elements such as the
-        tilemap, player, ores, minimap, and GUI.
+        tilemap, player, ores, minimap, and GCUI.
         """
         while True:
 
