@@ -13,7 +13,7 @@ class MainGui:
 
     def update(self, surf, mpos, on_main_gui, lv):
         # Built
-        self.toolbar = Gui(self.game, 'main', 1, (50, surf.get_height() - 25))
+        self.toolbar = Gui(self.game, 'main', 1, (surf.get_width()//2 - self.game.assets['gui/main'][1].get_width()//2, surf.get_height() - self.game.assets['gui/main'][1].get_height() - 2))
         self.pause = Gui(self.game, 'main', 2, (surf.get_width() - 8, 0))
         self.frame_profile = Gui(self.game, 'main', 0, (5, 5))
         self.profile = Gui(self.game, 'main', 4, (5, 5))
