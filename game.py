@@ -149,10 +149,7 @@ class Game:
 
                 # Ore
                 for ore in self.ores.copy():
-                    if ore.rect(render_scroll).collidepoint(mpos) and self.clicking:
-                        damage = self.mine.update()
-                        ore.attack(damage)
-                        self.clicking = False
+                    Mine(self).update(ore, mpos, self.clicking, render_scroll)
                     ore.update()
                     ore.render(self.display, render_scroll)
                     ore.respawn(ore, self.ores, self.display, render_scroll)

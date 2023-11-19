@@ -32,11 +32,8 @@ class Ores:
             self.count = 10
             self.clicking = False
 
-    def attack(self, damage):
-        self.hp = max(self.hp - damage, 0)
         if self.hp <= 0:
             self.variant = 0
-        self.clicking = True
 
     def respawn(self, ore, ores, surf, offset):
         pos = ore.pos
