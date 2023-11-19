@@ -38,7 +38,7 @@ class Ores:
                 self.give_exp = 1
                 print("Give EXP.")
                 print(f"EXP: {type(Character().load(self.game.char_id)[Character().INDEXPAIR['exp']])}")
-                Character().save(self.game.char_id, Character().load(self.game.char_id)[Character().INDEXPAIR['level']], Character().load(self.game.char_id)[Character().INDEXPAIR['exp']] + 10.0)
+                Character().save(self.game.char_id, Character().load(self.game.char_id)[Character().INDEXPAIR['level']], Character().load(self.game.char_id)[Character().INDEXPAIR['exp']] + 100.0, Character().load(self.game.char_id)[Character().INDEXPAIR['max_exp']])
 
         if self.clicking:
             self.count = 10

@@ -198,7 +198,7 @@ class Game:
                 # new_level = Character().load(self.char_id)[Character().INDEXPAIR['level']] + 1 ##
                 # new_exp = 30.324
             
-                self.level.update(Character().load(self.char_id)[Character().INDEXPAIR['level']], Character().load(self.char_id)[Character().INDEXPAIR['exp']])
+                self.level.update()
 
             if not self.playing:
                 # Gui

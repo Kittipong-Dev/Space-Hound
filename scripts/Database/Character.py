@@ -6,7 +6,8 @@ class Character:
     'name' : 0,
     'level': 1,
     'exp': 2,
-    'state': 3,
+    'max_exp' : 3,
+    'state': 4,
     }
 
     def table(self):
@@ -16,6 +17,7 @@ class Character:
             name TEXT,
             level INTEGER,
             exp REAL,
+            max_exp REAL,
             state INTEGER
         )""")
 
@@ -25,11 +27,12 @@ class Character:
         conn, c = Database().connect('character')
 
         if len(self.query()) < 3:
-            c.execute("""INSERT INTO character VALUES (:name, :level, :exp, :state)""",
+            c.execute("""INSERT INTO character VALUES (:name, :level, :exp, :max_exp, :state)""",
             {
                 'name' : name,
                 'level' : 0,
                 'exp' : 0,
+                'max_exp' : 100,
                 'state' : 1
             })
         else:
@@ -37,12 +40,13 @@ class Character:
 
         Database().close(conn)
 
-    def save(self, char_id, level, exp):
+    def save(self, char_id, level, exp, max_exp):
         conn, c = Database().connect('character')
 
         c.execute("""UPDATE character SET
             level = :level,
             exp = :exp,
+            max_exp = :max_exp,
             state = :state
 
 
@@ -50,6 +54,7 @@ class Character:
             {
                 'level': level,
                 'exp' : exp,
+                'max_exp' : max_exp,
                 'state' : 1,
                 'oid' : char_id
             })
