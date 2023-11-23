@@ -79,8 +79,9 @@ class Game:
         self.char_id = int()
 
         # Player
-        self.movement = [False, False, False, False]
+        self.movement = [False, False, False, False] # Movement keys are [A D W S]
         self.player = Player(self, (150, 120), (16, 17))
+        self.spd_factor = 2
 
         # Ore extractor
         self.mine = Mine(self)
@@ -118,10 +119,10 @@ class Game:
         self.input_box = InputBox(self, '')
         self.input_box.inputing = False
 
-
         # Test database #####
         self.replace = False
 
+        # leveling
         self.level = Level(self)
 
     def run(self):
@@ -137,10 +138,8 @@ class Game:
             # Mouse position
             mpos = pygame.mouse.get_pos()
             mpos = (mpos[0] / RENDER_SCALE, mpos[1] / RENDER_SCALE)
-            # if self.clicking:
-            #     print(mpos)
-            #     self.clicking = False
 
+            # if in game
             if self.playing:
                 # Camera movement
                 self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 5
@@ -158,12 +157,11 @@ class Game:
                     ore.respawn(ore, self.ores, self.display, render_scroll)
 
                 # Player
-                spd_factor = 2
-                # Movement keys are [A D W S]
-                self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * spd_factor, (self.movement[3] - self.movement[2]) * spd_factor))
+                self.player.update(self.tilemap, movement=((self.movement[1] - self.movement[0]) * self.spd_factor, (self.movement[3] - self.movement[2]) * self.spd_factor))
                 self.player.render(self.display, render_scroll)
 
-                # Minimap:
+                ############## REFACTER NEEDS ###################
+                # Minimap
                 self.miniscroll[0] += (self.player.rect().centerx - self.minimap.get_width() / 2 - self.miniscroll[0])
                 self.miniscroll[1] += (self.player.rect().centery - self.minimap.get_height() / 2 - self.miniscroll[1])
                 mini_scroll = (int(self.miniscroll[0]), int(self.miniscroll[1]))
@@ -180,7 +178,9 @@ class Game:
                 self.minimap.blit(transition_surf, (0, 0))
                 self.minimap.set_colorkey((119, 0, 255))
                 self.display.blit(pygame.transform.scale(self.minimap, (32, 32)), (self.display.get_width() - 37, 5))
+                ############## REFACTER NEEDS ###################
 
+                ########### FIX NEEDS ###############
                 # Gui
                 # Main
                 level = Character().load(self.char_id)[Character().INDEXPAIR['level']]
@@ -194,25 +194,24 @@ class Game:
                 else:
                     self.on_main_gui = True
                     self.inventory.y = 0
+                ########### FIX NEEDS ###############
 
-                # test database
-                # new_level = Character().load(self.char_id)[Character().INDEXPAIR['level']] + 1 ##
-                # new_exp = 30.324
-            
+                # level updating
                 self.level.update()
 
+            # create character
             if self.creating:
-                # Gui
-                # loading
+                # background
                 self.loading_gui.update()
                 self.loading_gui.render(self.display)
                 self.spin_player_gui.update()
                 self.spin_player_gui.render(self.display)
+                # create button
                 for create_btn in self.create_btns:
                     create_btn.update(self.clicking, mpos)
                     create_btn.render(self.display)
 
-
+            # input box
             self.input_box.update(self.clicking, mpos)
             self.input_box.render(self.display)
 
