@@ -216,33 +216,17 @@ class Game:
             self.input_box.update(self.clicking, mpos)
             self.input_box.render(self.display)
 
-            
-            # test database ##############
-            # self.show_query = Text(f"{Character().query()}", 16, pos=(0, 50))
-            # i = 60
-            # self.datas = list()
-            # for char_id in Character().query():
-            #     i += 10
-            #     self.datas.append(Text(str(Character().load(char_id)), 16, pos=(0, i)))
-            # for data in self.datas:
-            #     data.render(self.display)
-
-            # self.show_query.render(self.display)
-
-        
-            try:
-                delete_id = Character().query()[0]
-            except IndexError:
-                pass
-
             # Event
             for event in pygame.event.get():
+                # input box
                 self.input_box.event(event)
 
+                # quitting
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
+                # clicking check
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         self.clicking = True
@@ -252,8 +236,11 @@ class Game:
                         self.clicking = False
 
                 if event.type == pygame.KEYDOWN:
-
+                    
+                    # if in game
                     if self.playing:
+
+                        # movement
                         if event.key == pygame.K_s:
                             self.movement[3] = True
                         if event.key == pygame.K_w:
@@ -263,6 +250,7 @@ class Game:
                         if event.key == pygame.K_a:
                             self.movement[0] = True
 
+                        # item slot
                         if self.on_main_gui:
                             if event.key == pygame.K_1:
                                 print('1')
@@ -284,9 +272,10 @@ class Game:
                                 print('9')
                             if event.key == pygame.K_0:
                                 print('0')
+                        # Back to character page
                         if event.key == pygame.K_ESCAPE:
                             self.creating = True
-                            self.plaing = False
+                            self.playing = False
                     
                         # test database ########
                         if self.on_inventory:
@@ -318,11 +307,11 @@ class Game:
                         if event.key == pygame.K_e:
                             self.on_inventory = not self.on_inventory
 
-                    # if event.key == pygame.K_b:
-                    #     Character().save(self.char_id, new_level, new_exp)
 
                 if event.type == pygame.KEYUP:
+                    # if in game
                     if self.playing:
+                        # movement 
                         if event.key == pygame.K_s:
                             self.movement[3] = False
                         if event.key == pygame.K_w:
