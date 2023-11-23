@@ -23,22 +23,25 @@ class CreateCharacterGui:
             self.btype = 0
         
         if clicking:
-            try:
+            if not self.game.input_box.inputing:
                 if self.button.rect().collidepoint(mpos):
-                    self.game.char_id = Character().query()[self.index]
-                    self.game.playing = True
-                    print(str(Character().load(Character().query()[self.index])))
-                    self.game.clicking = False
-            except IndexError:
-                self.create_char = True
-                self.game.input_box = InputBox(self.game, 'Enter Your Name')
-                self.game.clicking = False
-            try:
+                    try:
+                        self.game.char_id = Character().query()[self.index]
+                        self.game.creating = False
+                        self.game.playing = True
+                        print(str(Character().load(Character().query()[self.index])))
+                        self.game.clicking = False
+                    except IndexError:
+                        self.create_char = True
+                        self.game.input_box = InputBox(self.game, 'Enter Your Name')
+                        self.game.clicking = False
+            
                 if self.delete_btn.rect().collidepoint(mpos):
-                    Character().delete(Character().query()[self.index])
-                    self.game.clicking = False
-            except IndexError:
-                pass
+                    try:
+                        Character().delete(Character().query()[self.index])
+                        self.game.clicking = False
+                    except IndexError:
+                        pass
 
         if self.create_char:
             name = self.game.input_box.get_input()

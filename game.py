@@ -111,11 +111,12 @@ class Game:
             self.create_btns.append(CreateCharacterGui(self, (self.display.get_width() - 100, y), i))
             y += 48
         # Loading
+        self.creating = True
         self.loading_gui = LoadingGui(self)
         self.spin_player_gui = SpinPlayerGui(self)
         # Input box
-        self.inputing = False
-        self.input_box = ''
+        self.input_box = InputBox(self, '')
+        self.input_box.inputing = False
 
 
         # Test database #####
@@ -200,7 +201,7 @@ class Game:
             
                 self.level.update()
 
-            if not self.playing:
+            if self.creating:
                 # Gui
                 # loading
                 self.loading_gui.update()
@@ -211,10 +212,10 @@ class Game:
                     create_btn.update(self.clicking, mpos)
                     create_btn.render(self.display)
 
-                if self.inputing:
-                    # Input Box
-                    self.input_box.update(self.clicking, mpos)
-                    self.input_box.render(self.display)
+
+            self.input_box.update(self.clicking, mpos)
+            self.input_box.render(self.display)
+
             
             # test database ##############
             # self.show_query = Text(f"{Character().query()}", 16, pos=(0, 50))
@@ -236,8 +237,7 @@ class Game:
 
             # Event
             for event in pygame.event.get():
-                if self.inputing:
-                    self.input_box.event(event)
+                self.input_box.event(event)
 
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -285,7 +285,8 @@ class Game:
                             if event.key == pygame.K_0:
                                 print('0')
                         if event.key == pygame.K_ESCAPE:
-                            self.playing = False
+                            self.creating = True
+                            self.plaing = False
                     
                         # test database ########
                         if self.on_inventory:
