@@ -84,21 +84,6 @@ class Character:
             })
 
         Database().close(conn)
-    
-    def save_level(self, char_id, level):
-        conn, c = Database().connect('character')
-
-        c.execute("""UPDATE character SET
-            level = :level
-
-
-            WHERE oid = :oid""",
-            {
-                'level': level,
-                'oid' : char_id
-            })
-
-        Database().close(conn)
 
     def save_all(self, char_id, level, exp, max_exp):
         conn, c = Database().connect('character')
