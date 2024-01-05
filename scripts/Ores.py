@@ -1,6 +1,7 @@
 import pygame
 from scripts.Level import Level
 from scripts.Database.Character import Character
+from scripts.Database.Inventory import Inventory
 
 class Ores:
     cooldown = 100
@@ -17,9 +18,9 @@ class Ores:
         self.max_ore = max_ore
         self.cooldown = 100
         if self.variant == 1:
-            self.give_exp = 0
+            self.drop = 0
         elif self.variant == 0:
-            self.give_exp = 1
+            self.drop = 1
 
     def rect(self, offset=(0, 0)):
         return pygame.Rect(self.pos[0] - offset[0], self.pos[1] - offset[1], self.game.assets['ores'][self.variant].get_width(), self.game.assets['ores'][self.variant].get_height())
@@ -34,11 +35,13 @@ class Ores:
         if self.hp <= 0:
             self.variant = 0
 
-            if not self.give_exp:
-                self.give_exp = 1
+            if not self.drop:
+                self.drop = 1
                 print("Give EXP.")
                 print(f"EXP: {type(Character().load(self.game.char_id)[Character().INDEXPAIR['exp']])}")
-                Character().save_exp(self.game.char_id, Character().load(self.game.char_id)[Character().INDEXPAIR['exp']] + 100.0)
+                Character().save_exp(self.game.char_id, Character().load(self.game.char_id)[Character().INDEXPAIR['exp']] + 100.0) ########
+                Inventory().place("gold_ore", 0, self.game.char_id) ### need to change item type by variant
+                Inventory().load(self.game.char_id)
 
         if self.clicking:
             self.count = 10
@@ -50,7 +53,7 @@ class Ores:
             if self.max_ore > max_ore_check(ores) and not self.cooldown:
                 ore.hp = 100
                 ore.variant = 1
-                self.give_exp = 0
+                self.drop = 0
             if self.max_ore == max_ore_check(ores):
                 self.cooldown = 100
 

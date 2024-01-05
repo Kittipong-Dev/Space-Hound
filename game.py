@@ -54,6 +54,7 @@ class Game:
             'player/runy-1' : Animation(load_images('entities/player/runy-1', 'a'), img_dur=11),
             'player/runy+1' : Animation(load_images('entities/player/runy+1', 'a'), img_dur=11),
             'items/ore extractor/0' : load_image('items/ore extractor/0.png', 'a'),
+            'items/gole ore' : load_image('items/gold ore/0.png', 'a'),
             'gui/create character' : load_images('gui/create character', 'a'),
             'gui/loading' : load_images('gui/loading', 'a'),
             'gui/spin player' : load_images('gui/spin player', 'a'),

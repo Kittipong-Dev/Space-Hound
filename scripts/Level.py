@@ -7,8 +7,6 @@ class Level:
         self.game = game
 
     def update(self):
-        print(Character().load(self.game.char_id)[Character().INDEXPAIR['level']])
-        print(Character().load(self.game.char_id)[Character().INDEXPAIR['exp']])
 
         if Character().load(self.game.char_id)[Character().INDEXPAIR['exp']] - Character().load(self.game.char_id)[Character().INDEXPAIR['max_exp']] >= 0:
             Character().save_level(self.game.char_id, Character().load(self.game.char_id)[Character().INDEXPAIR['level']] + 1)

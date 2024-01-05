@@ -1,7 +1,7 @@
 import sqlite3
 from scripts.Database.Database import Database
 
-# inventory index range = 0-38. 0-29 is in inventory. 30-38 is in toolbar
+# inventory index range = 0-38. 0-8 is in inventory. 9-38 is in toolbar
 
 class Inventory:
     def table(self):
@@ -24,15 +24,27 @@ class Inventory:
             inventory_data_list.append(inventory_data)
             print(inventory_data)
 
-        return inventory_data_list
-        print(inventory_data_list)
+        print(self.count(inventory_data_list))
 
         Database().close(conn)
+
+        return inventory_data_list
+
+    def count(self, inventory_data_list: list):
+        ls: list = list(map(lambda x: x[0], inventory_data_list))
+
+        all_types: list = list(map(lambda x: x[0], set(inventory_data_list)))
+
+        return_obj: object = {}
+        for t in all_types:
+            return_obj[t] = ls.count(t)
+
+        return return_obj
 
     def place(self, item_type, slot_index, char_id):
         conn, c = Database().connect('inventory')
 
-        if not self.check_index(slot_index, char_id):
+        if not self.slot_full(item_type, slot_index, char_id):
             c.execute("""INSERT INTO inventory VALUES (:item_type, :slot_index, :char_id)""",
             {
                 'item_type' : item_type,
@@ -40,7 +52,7 @@ class Inventory:
                 'char_id' : char_id
             })
         else:
-            self.replace(item_type, slot_index, char_id)
+            self.replace(item_type, slot_index, char_id) ########## replce need fix
         
         Database().close(conn)
         
@@ -60,19 +72,21 @@ class Inventory:
 
         Database().close(conn)
 
-    def check_index(self, slot_index, char_id):
+    def slot_full(self, item_type, slot_index, char_id):
         conn, c = Database().connect('inventory')
 
         print(slot_index, char_id)
         c.execute(f"SELECT * FROM inventory WHERE slot_index = {slot_index} AND char_id = {char_id}")
-        if c.fetchall():
-            print(True)
-            return True
-        else:
-            print(False)
-            return False
+        return_value = False
+        data: list = c.fetchall()
+        if data:
+            if not(item_type in data[0]):
+                return_value = True
+            
         
         Database().close(conn)
+
+        return return_value
 
     
 if __name__ == "__main__":
