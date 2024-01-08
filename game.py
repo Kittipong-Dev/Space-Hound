@@ -241,13 +241,13 @@ class Game:
                     if self.playing:
 
                         # movement
-                        if event.key == pygame.K_s:
+                        if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                             self.movement[3] = True
-                        if event.key == pygame.K_w:
+                        if event.key == pygame.K_w or event.key == pygame.K_UP:
                             self.movement[2] = True
-                        if event.key == pygame.K_d:
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             self.movement[1] = True
-                        if event.key == pygame.K_a:
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                             self.movement[0] = True
 
                         # item slot
@@ -312,13 +312,13 @@ class Game:
                     # if in game
                     if self.playing:
                         # movement 
-                        if event.key == pygame.K_s:
+                        if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                             self.movement[3] = False
-                        if event.key == pygame.K_w:
+                        if event.key == pygame.K_w or event.key == pygame.K_UP:
                             self.movement[2] = False
-                        if event.key == pygame.K_d:
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             self.movement[1] = False
-                        if event.key == pygame.K_a:
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                             self.movement[0] = False
 
             # Display

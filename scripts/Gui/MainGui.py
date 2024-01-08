@@ -35,6 +35,7 @@ class MainGui:
                     self.game.clicking = False
 
             if self.pause.rect().collidepoint(mpos) and self.game.clicking:
+                self.game.creating = True
                 self.game.playing = False
                 self.game.clicking = False
 
