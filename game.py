@@ -33,7 +33,8 @@ class Game:
         # Display
         # The code snippet is setting up the display window for the game using the Pygame library.
         pygame.display.set_caption('Space Hound')
-        self.screen = pygame.display.set_mode((1024, 579), pygame.RESIZABLE)
+        # self.screen = pygame.display.set_mode((1024, 579), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((1024, 579))
         self.display = pygame.Surface((256, 144), pygame.SRCALPHA)
         self.minimap = pygame.Surface((256, 256))
         self.clock = pygame.time.Clock()
