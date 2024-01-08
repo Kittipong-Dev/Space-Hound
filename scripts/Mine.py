@@ -9,7 +9,6 @@ class Mine:
     def update(self, ore, mpos, clicking, render_scroll):
         if ore.rect(render_scroll).collidepoint(mpos) and clicking:
             ore.hp = max(0, ore.hp - self.damage)
-            print(ore.hp)
             self.game.clicking = False
             ore.clicking = True
 

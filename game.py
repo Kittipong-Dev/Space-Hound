@@ -219,7 +219,7 @@ class Game:
             # Event
             for event in pygame.event.get():
                 # input box
-                self.input_box.event(event)
+                self.input_box.event(event) ##??
 
                 # quitting
                 if event.type == pygame.QUIT:
@@ -276,33 +276,6 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             self.creating = True
                             self.playing = False
-                    
-                        # test database ########
-                        if self.on_inventory:
-                            
-                            if event.key == pygame.K_1:
-                                Inventory().place('gold', 0, self.char_id)
-                            if event.key == pygame.K_2:
-                                Inventory().place('gold', 1, self.char_id)
-                            if event.key == pygame.K_3:
-                                Inventory().place('diamond', 2, self.char_id)
-        
-
-                            if event.key == pygame.K_r:
-                                self.replace = not self.replace
-
-                            if self.replace:
-                                if event.key == pygame.K_1:
-                                    Inventory().replace('diamond', 0, self.char_id)
-                                if event.key == pygame.K_2:
-                                    Inventory().replace('ruby', 1, self.char_id)
-                                if event.key == pygame.K_3:
-                                    Inventory().replace('gold', 2, self.char_id)
-
-                            if event.key == pygame.K_g:
-                                print(Inventory().load(self.char_id))
-
-
 
                         if event.key == pygame.K_e:
                             self.on_inventory = not self.on_inventory

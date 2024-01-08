@@ -22,7 +22,6 @@ class Inventory:
         inventory_data_list = list()
         for inventory_data in c.fetchall():
             inventory_data_list.append(inventory_data)
-            print(inventory_data)
 
         print(self.count(inventory_data_list))
 
@@ -75,7 +74,6 @@ class Inventory:
     def slot_full(self, item_type, slot_index, char_id):
         conn, c = Database().connect('inventory')
 
-        print(slot_index, char_id)
         c.execute(f"SELECT * FROM inventory WHERE slot_index = {slot_index} AND char_id = {char_id}")
         return_value = False
         data: list = c.fetchall()

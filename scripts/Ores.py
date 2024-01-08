@@ -37,8 +37,6 @@ class Ores:
 
             if not self.drop:
                 self.drop = 1
-                print("Give EXP.")
-                print(f"EXP: {type(Character().load(self.game.char_id)[Character().INDEXPAIR['exp']])}")
                 Character().save_exp(self.game.char_id, Character().load(self.game.char_id)[Character().INDEXPAIR['exp']] + 100.0) ########
                 Inventory().place("gold_ore", 0, self.game.char_id) ### need to change item type by variant
                 Inventory().load(self.game.char_id)
