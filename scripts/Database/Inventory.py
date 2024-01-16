@@ -23,22 +23,22 @@ class Inventory:
         for inventory_data in c.fetchall():
             inventory_data_list.append(inventory_data)
 
-        print(self.count(inventory_data_list))
+        print(self.count(char_id))
 
         Database().close(conn)
 
         return inventory_data_list
 
-    def count(self, inventory_data_list: list):
-        ls: list = list(map(lambda x: x[0], inventory_data_list))
+    def count(self, char_id):
+        conn, c = Database().connect("inventory")
 
-        all_types: list = list(map(lambda x: x[0], set(inventory_data_list)))
+        c.execute(f"""SELECT item_type, COUNT(item_type) FROM inventory WHERE char_id = {char_id} GROUP BY item_type""")
 
-        return_obj: object = {}
-        for t in all_types:
-            return_obj[t] = ls.count(t)
+        res = c.fetchall()
 
-        return return_obj
+        Database().close(conn)
+
+        return res
 
     def place(self, item_type, slot_index, char_id):
         conn, c = Database().connect('inventory')
@@ -51,25 +51,30 @@ class Inventory:
                 'char_id' : char_id
             })
         else:
-            self.replace(item_type, slot_index, char_id) ########## replce need fix
+            c.execute("""INSERT INTO inventory VALUES (:item_type, :slot_index, :char_id)""",
+            {
+                'item_type' : item_type,
+                'slot_index' : slot_index, 
+                'char_id' : char_id
+            }) ### Place need fix
         
         Database().close(conn)
         
     
-    def replace(self, item_type, slot_index, char_id):
-        conn, c = Database().connect('inventory')
+    # def replace(self, item_type, slot_index, char_id):
+        # conn, c = Database().connect('inventory')
 
-        c.execute("""UPDATE inventory SET
-        item_type = :item_type
+        # c.execute("""UPDATE inventory SET
+        # item_type = :item_type
 
-        WHERE slot_index = :slot_index AND char_id = :char_id""", 
-        {
-            'item_type' : item_type,
-            'slot_index' : slot_index,
-            'char_id' : char_id
-        })
+        # WHERE slot_index = :slot_index AND char_id = :char_id""", 
+        # {
+        #     'item_type' : item_type,
+        #     'slot_index' : slot_index,
+        #     'char_id' : char_id
+        # })
 
-        Database().close(conn)
+        # Database().close(conn)
 
     def slot_full(self, item_type, slot_index, char_id):
         conn, c = Database().connect('inventory')
